@@ -114,6 +114,7 @@ Scrapers available for:
 - `https://cookingcircle.com/ <https://cookingcircle.com/>`_
 - `https://cookinglight.com/ <https://cookinglight.com/>`_
 - `https://cookpad.com/ <https://cookpad.com/>`_
+- `https://cooksmarts.com/ <https://cooksmarts.com/>`_
 - `https://cookstr.com/ <https://cookstr.com>`_
 - `https://copykat.com/ <https://copykat.com>`_
 - `https://countryliving.com/ <https://countryliving.com>`_
