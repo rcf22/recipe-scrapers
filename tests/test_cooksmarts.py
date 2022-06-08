@@ -13,7 +13,7 @@ class TestCookSmartsScraper(ScraperTest):
         # self.assertEqual("Charlotte Roberts", self.harvester_class.author())
 
     def test_title(self):
-        self.assertEqual("Poached Salmon in Coconut Lime Curry", self.harvester_class.title())
+        self.assertEqual("Poached Salmon in Coconut Lime Curry with asparagus / snap peas / basmati rice", self.harvester_class.title())
 
     # def test_category(self):
         # self.assertEqual("30 mins or less", self.harvester_class.category())
