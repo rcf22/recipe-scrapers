@@ -67,6 +67,9 @@ class CookSmarts(CookSmartsScraper):
             else:
                 if (units == ""):
                     units = match[1]
+                    if (units.find("(") != -1):
+                        units = match[1].split('(')[0]
+                        units = units[:-1]
                 preparation = ""
             
             ing = {
