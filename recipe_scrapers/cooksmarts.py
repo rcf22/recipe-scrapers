@@ -31,8 +31,8 @@ class CookSmarts(CookSmartsScraper):
         return ""
 
     def yields(self):
-        #print(self.soup.find("Servings:").content)
-        return ""
+        servingsDiv = self.soup.find("div", {"class": "recipe-meta__label"}, string="Servings:")
+        return servingsDiv.findNext('div').contents[0]
 
     def image(self):
         #return self.schema.image()
