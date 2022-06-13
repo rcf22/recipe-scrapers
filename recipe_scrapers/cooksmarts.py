@@ -3,6 +3,7 @@ from ._abstract import *
 from ._utils import normalize_string
 import re
 import requests
+import json
 from operator import itemgetter
 
 minCarbs = 0.9
@@ -48,21 +49,30 @@ class CookSmarts(CookSmartsScraper):
             amount = cleanEach[cleanEach.find(" - ")+3 : len(cleanEach)]
             
             match = re.search('[a-zA-Z]', amount)
-            qty = amount[0 : match.start()]
-            
+            qty = amount[0 : match.start()-1]
+            units = ""
+            if (qty.find(",") != -1):
+                #If qty has a comma, then there was no unit and we need to strip the comma
+                qty = qty.split(',')[0]
+                units = "items"
+                
             match = re.search('^[^a-zA-Z]+(.*)', amount)
             if (amount.find(",") != -1):
-                units = match[1].split(',')[0]
+                if (units == ""):
+                    units = match[1].split(',')[0]
                 preparation = amount[amount.find(",")+2 : len(amount)]
             else:
-                units = match[1]
+                if (units == ""):
+                    units = match[1]
                 preparation = ""
             
-            ing['Ingredient'] = name
-            ing['Qty'] = qty
-            ing['Units'] = units
-            ing['Preparation'] = preparation
-            
+            ing = {
+                    'Ingredient': name,
+                    'Qty': qty,
+                    'Units': units,
+                    'Preparation': preparation
+                  }
+                  
             cleanIngList.append(ing)
             
         return cleanIngList
