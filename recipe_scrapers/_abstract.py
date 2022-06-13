@@ -64,6 +64,7 @@ class CookSmartsScraper:
         wild_mode: Optional[bool] = False,
         html: Union[str, None] = None,
     ):
+    
         if html:
             self.page_data = html
         else:
@@ -86,6 +87,7 @@ class CookSmartsScraper:
 
     @classmethod
     def host(cls) -> str:
+        """get the host of the url, so we can use the correct scraper"""
         raise NotImplementedError("This should be implemented.")
 
     def canonical_url(self):

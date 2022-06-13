@@ -1,5 +1,11 @@
-from ._abstract import CookSmartsScraper
+#from ._abstract import CookSmartsScraper
+from ._abstract import *
 from ._utils import normalize_string
+import re
+import requests
+from operator import itemgetter
+
+minCarbs = 0.9
 
 class CookSmarts(CookSmartsScraper):
     @classmethod
@@ -12,9 +18,9 @@ class CookSmarts(CookSmartsScraper):
         return ""
 
     def title(self):
-        #return self.soup.select_one("h1 .recipe__name")
         return normalize_string(self.soup.find("h1", {"class": "recipe__name"}).get_text())
-		
+        #return self.soup.select_one("h1 .recipe__name")
+        
     def category(self):
         #return self.schema.category()
         return ""
@@ -24,7 +30,7 @@ class CookSmarts(CookSmartsScraper):
         return ""
 
     def yields(self):
-        #return self.schema.yields()
+        #print(self.soup.find("Servings:").content)
         return ""
 
     def image(self):
@@ -32,8 +38,34 @@ class CookSmarts(CookSmartsScraper):
         return ""
 
     def ingredients(self):
-        #return self.schema.ingredients()
-        return ""
+        
+        ingList = self.soup.find("ul", {"class": "recipe__ingredients"}).find_all("li")
+        cleanIngList = []
+        for each in ingList:
+            ing = {}
+            cleanEach = normalize_string(each.get_text())
+            name = cleanEach[0: cleanEach.find(" - ")]
+            amount = cleanEach[cleanEach.find(" - ")+3 : len(cleanEach)]
+            
+            match = re.search('[a-zA-Z]', amount)
+            qty = amount[0 : match.start()]
+            
+            match = re.search('^[^a-zA-Z]+(.*)', amount)
+            if (amount.find(",") != -1):
+                units = match[1].split(',')[0]
+                preparation = amount[amount.find(",")+2 : len(amount)]
+            else:
+                units = match[1]
+                preparation = ""
+            
+            ing['Ingredient'] = name
+            ing['Qty'] = qty
+            ing['Units'] = units
+            ing['Preparation'] = preparation
+            
+            cleanIngList.append(ing)
+            
+        return cleanIngList
 
     def instructions(self):
         #return self.schema.instructions()
@@ -50,3 +82,26 @@ class CookSmarts(CookSmartsScraper):
     def description(self):
         #return self.schema.description()
         return ""
+        
+    def nutrition(self):
+        carbsUrl = self.url + "/nutrition_top_sources?nutrient=total_carbs&view=standard"
+        carbsHtml = requests.get(carbsUrl, headers=COOKSMARTS_HEADERS, cookies=COOKIES).content
+        carbSoup = BeautifulSoup(carbsHtml, "html.parser")
+        
+        carbsList = []
+        
+        for each in carbSoup.find_all("div", {"class": "facts__details-row"}):
+            cleanEach = normalize_string(each.get_text())
+            
+            ing = normalize_string(each.contents[0])
+            
+            carbs = normalize_string(each.find("span").get_text())
+            if carbs.find("<") != -1:
+                carbs = 0
+            else:
+                carbs = int(carbs[0 : len(carbs)-1])
+                
+            if (carbs > minCarbs):
+                carbsList.append([ing, carbs])
+        
+        return sorted(carbsList, key=itemgetter(1), reverse=True)
