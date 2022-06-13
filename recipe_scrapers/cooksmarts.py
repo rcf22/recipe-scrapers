@@ -60,6 +60,9 @@ class CookSmarts(CookSmartsScraper):
             if (amount.find(",") != -1):
                 if (units == ""):
                     units = match[1].split(',')[0]
+                    if (units.find("(") != -1):
+                        units = match[1].split('(')[0]
+
                 preparation = amount[amount.find(",")+2 : len(amount)]
             else:
                 if (units == ""):
